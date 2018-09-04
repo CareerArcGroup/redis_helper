@@ -157,6 +157,7 @@ class Redis
     end
 
     alias_method :size, :length
+    alias_method :count, :length
 
     def range_size(min, max)
       redis.zcount(key, min, max)
@@ -169,6 +170,8 @@ class Redis
     def members(options={})
       range(0, -1, options) || []
     end
+
+    alias_method :to_a, :members
 
     expiration_filter :[]=, :add, :merge, :difference_and_store, :increment, :decrement, :intersection, :intersect_and_store, :union_and_store
 
