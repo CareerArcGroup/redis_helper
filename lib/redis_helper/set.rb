@@ -23,7 +23,9 @@ class Redis
     end
 
     def merge(*values)
-      redis.sadd(key, values.flatten.map{|v| marshal(v)})
+      values.flatten.each_slice(1000) do |arr|
+        redis.sadd(key, arr.map{|v| marshal(v)})
+      end
     end
 
     def members

@@ -24,6 +24,7 @@ class Redis
       "#<Redis::Value #{value.inspect}>"
     end
 
+    def default_value?; options[:default] && options[:default] == value end
     def ==(other); value == other end
     def nil?; value.nil? end
     def as_json(*args); value.as_json(*args) end
