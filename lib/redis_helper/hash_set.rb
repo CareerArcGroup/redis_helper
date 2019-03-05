@@ -133,6 +133,6 @@ class Redis
       incrbyfloat(field, -by)
     end
 
-    expiration_filter :[]=, :bulk_set, :fill, :increment
+    expiration_filter :[]=, :bulk_set, :update, :fill, :increment
   end
 end

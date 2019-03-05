@@ -173,7 +173,7 @@ class Redis
 
     alias_method :to_a, :members
 
-    expiration_filter :[]=, :add, :merge, :difference_and_store, :increment, :decrement, :intersection, :intersect_and_store, :union_and_store
+    expiration_filter :[]=, :add, :merge, :add_all, :difference_and_store, :increment, :decrement, :intersection, :intersect_and_store, :union_and_store
 
     private
 
