@@ -34,6 +34,6 @@ class Redis
       self.value.send(*args)
     end
 
-    expiration_filter :value=
+    expiration_filter :value=, :set
   end
 end
