@@ -18,8 +18,9 @@ class Redis
       unmarshal redis.spop(key)
     end
 
-    def random_member
-      unmarshal redis.srandmember(key)
+    def random_member(count = nil)
+      values = redis.srandmember(key, count)
+      count.nil? ? unmarshal(values) : values.map { |v| unmarshal(v) }
     end
 
     def merge(*values)
