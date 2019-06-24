@@ -26,6 +26,7 @@ describe Redis::RedisHelper do
       value :current_galaxy, :global => true
       counter :num_grapes
       list :shopping_list, :marshal => true
+      set :numbers, :marshal => true
       sorted_set :high_scores
     end
 
@@ -174,6 +175,22 @@ describe Redis::RedisHelper do
         @obj.shopping_list << 'apples'
         coll = @obj.shopping_list.select {|item| item == 'apples'}
         expect(coll).to eq %w(apples apples)
+      end
+    end
+
+    describe 'A set property' do
+      it 'should return random members' do
+        numbers = [1, 2, 3, 4, 5]
+
+        @obj.numbers.clear!
+
+        expect(@obj.numbers.random_member).to be_nil
+        expect(@obj.numbers.random_member(3)).to eq([])
+
+        @obj.numbers.merge(numbers)
+
+        expect(numbers).to include(@obj.numbers.random_member)
+        expect(@obj.numbers.random_member(3).size).to eq(3)
       end
     end
 
