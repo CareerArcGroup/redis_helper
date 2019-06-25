@@ -198,10 +198,12 @@ describe Redis::RedisHelper do
       it 'should handle sorted sets of somple values' do
         @obj.high_scores.clear!
 
+        expect(@obj.high_scores).to_not include('Stephen')
         expect(@obj.high_scores).to be_empty
 
         @obj.high_scores['Stephen'] = 9000
 
+        expect(@obj.high_scores).to include('Stephen')
         expect(@obj.high_scores.score('Stephen')).to eq 9000
         expect(@obj.high_scores.size).to eq 1
 

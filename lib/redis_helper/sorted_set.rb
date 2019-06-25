@@ -164,8 +164,10 @@ class Redis
     end
 
     def member?(value)
-      redis.zscore(key, marshal(value)).present?
+      !redis.zscore(key, marshal(value)).nil?
     end
+
+    alias_method :include?, :member?
 
     def members(options={})
       range(0, -1, options) || []
