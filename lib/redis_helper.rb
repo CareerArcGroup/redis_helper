@@ -21,6 +21,7 @@ class Redis
     class MissingId < StandardError; end
 
     def self.redis
+      @redis ||= nil
       @redis || Redis.current || raise(NotConnected, "Redis connection not available")
     end
 

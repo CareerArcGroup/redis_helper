@@ -1,9 +1,8 @@
-require 'redis_helper'
+require 'test_helper'
 require 'yaml'
 
 describe Redis::RedisHelper do
-  before do
-
+  before(:all) do
     config_path = "redis.yml"
 
     if File.exist?(config_path)
@@ -156,7 +155,7 @@ describe Redis::RedisHelper do
         expect(@obj.shopping_list.length).to eq 4
         expect(@obj.shopping_list.size).to eq 4
 
-        @obj.shopping_list.push *['habaneros', 'illy']
+        @obj.shopping_list.push('habaneros', 'illy')
 
         expect(@obj.shopping_list).to eq %w(apples cucumbers figs grapes habaneros illy)
 
@@ -207,9 +206,9 @@ describe Redis::RedisHelper do
         expect(@obj.high_scores.score('Stephen')).to eq 9000
         expect(@obj.high_scores.size).to eq 1
 
-        @obj.high_scores.add('Steve Gelbur', -1000000)
+        @obj.high_scores.add('Patrick', -1000000)
 
-        expect(@obj.high_scores['Steve Gelbur']).to eq -1000000
+        expect(@obj.high_scores['Patrick']).to eq(-1000000)
 
         @obj.high_scores['Hodor'] = 400
         @obj.high_scores['John Snow'] = 500
