@@ -60,7 +60,7 @@ class Redis
       EndOverload
     end
 
-    expiration_filter :increment, :decrement
+    expiration_filter :increment, :decrement, :value=
 
     private
 
