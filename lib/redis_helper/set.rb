@@ -113,7 +113,7 @@ class Redis
       members.join(', ')
     end
 
-    expiration_filter :add
+    expiration_filter :add, :merge, :pop, :intersection_store, :union_store, :difference_store
 
     private
 
