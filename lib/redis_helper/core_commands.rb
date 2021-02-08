@@ -2,7 +2,7 @@ class Redis
   module RedisHelper
     module CoreCommands
       def exists?
-        redis.exists key
+        redis.exists? key
       end
 
       def delete!
