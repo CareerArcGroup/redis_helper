@@ -38,12 +38,12 @@ describe Redis::RedisHelper do
         key = @obj.first_name.key
         @obj.first_name = "John"
 
-        expect(Redis.current.get(key)).to eq "John"
+        expect(Redis.new.get(key)).to eq "John"
       end
 
       it 'should retrieve the value from redis' do
         key = @obj.first_name.key
-        Redis.current.set(key, 'Randall')
+        Redis.new.set(key, 'Randall')
 
         expect(@obj.first_name).to eq "Randall"
       end

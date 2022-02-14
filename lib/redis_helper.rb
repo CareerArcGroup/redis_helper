@@ -22,7 +22,7 @@ class Redis
 
     def self.redis
       @redis ||= nil
-      @redis || Redis.current || raise(NotConnected, "Redis connection not available")
+      @redis || Redis.new || raise(NotConnected, "Redis connection not available")
     end
 
     def self.redis=(conn)
