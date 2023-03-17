@@ -6,9 +6,10 @@ describe Redis::RedisHelper do
     config_path = "redis.yml"
 
     if File.exist?(config_path)
-      Redis.current = Redis.new(YAML.load(File.read(config_path)))
+      Redis::RedisHelper.redis = Redis.new(YAML.load(File.read(config_path)))
     else
       puts "No redis.yml file found in root directory, using default connection settings..."
+      Redis::RedisHelper.redis = Redis.new
     end
 
     class Redis::RedisBackedObject
@@ -38,12 +39,12 @@ describe Redis::RedisHelper do
         key = @obj.first_name.key
         @obj.first_name = "John"
 
-        expect(Redis.current.get(key)).to eq "John"
+        expect(Redis::RedisHelper.redis.get(key)).to eq "John"
       end
 
       it 'should retrieve the value from redis' do
         key = @obj.first_name.key
-        Redis.current.set(key, 'Randall')
+        Redis::RedisHelper.redis.set(key, 'Randall')
 
         expect(@obj.first_name).to eq "Randall"
       end

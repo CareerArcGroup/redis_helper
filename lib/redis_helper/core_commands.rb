@@ -41,7 +41,7 @@ class Redis
         redis.move key, db_index
       end
 
-      def sort(options={})
+      def sort(**options)
         options[:order] = "asc alpha" if options.keys.count == 0
         val = redis.sort(key, options)
         val.is_a?(Array) ? val.map{|v| unmarshal(v)} : val
@@ -55,9 +55,9 @@ class Redis
         (!value.nil? && (options[:marshal] == true || do_marshal)) ? from_serialized(value) : value
       end
 
-      def send_reversable(forward_cmd, reverse, *args)
+      def send_reversable(forward_cmd, reverse, *args, **kwargs)
         reverse_cmd = "#{forward_cmd.to_s[0]}rev#{forward_cmd.to_s[1..-1]}"
-        redis.public_send(reverse == true ? reverse_cmd : forward_cmd, *args)
+        redis.public_send(reverse == true ? reverse_cmd : forward_cmd, *args, **kwargs)
       end
 
       private

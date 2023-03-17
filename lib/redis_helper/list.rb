@@ -99,8 +99,8 @@ class Redis
       values.join(', ')
     end
 
-    def method_missing(*args)
-      self.values.send(*args)
+    def method_missing(*args, **kwargs)
+      values.send(*args, **kwargs)
     end
 
     expiration_filter :[]=, :push, :insert, :unshift
