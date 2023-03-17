@@ -78,16 +78,14 @@ class Redis
       redis.del(key)
     end
 
-    def bulk_set(*args)
-      raise ArgumentError, 'Argument to bulk_set must be hash of key/value pairs' unless args.last.is_a?(::Hash)
-      redis.hmset(key, *args.last.inject([]) do |memo,kv|
+    def bulk_set(**pairs)
+      redis.hmset(key, *pairs.inject([]) do |memo,kv|
         memo + [kv[0], marshal(kv[1], options[:marshal_keys][kv[0]])]
       end)
     end
     alias_method :update, :bulk_set
 
-    def fill(pairs={})
-      raise ArgumentError, "Arugment to fill must be a hash of key/value pairs" unless pairs.is_a?(::Hash)
+    def fill(**pairs)
       pairs.each do |field, value|
         redis.hsetnx(key, field, marshal(value, options[:marshal_keys][field]))
       end

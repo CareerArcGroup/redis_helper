@@ -47,24 +47,24 @@ class Redis
       rank(member, true)
     end
 
-    def range(start_index, end_index, options={})
-      send_reversable(:zrange, options[:reverse], key, start_index, end_index, options).map {|e| (options[:with_scores]) ? [unmarshal(e[0]), e[1]] : unmarshal(e)}
+    def range(start_index, end_index, **options)
+      send_reversable(:zrange, options[:reverse], key, start_index, end_index, **options).map {|e| (options[:with_scores]) ? [unmarshal(e[0]), e[1]] : unmarshal(e)}
     end
 
-    def rev_range(start_index, end_index, options={})
-      range(start_index, end_index, options.merge(reverse: true))
+    def rev_range(start_index, end_index, **options)
+      range(start_index, end_index, **options.merge(reverse: true))
     end
 
-    def range_by_score(min, max, options={})
+    def range_by_score(min, max, **options)
       args = {}
       args[:limit] = [options[:offset] || 0, options[:limit] || options[:count]] if options[:offset] || options[:limit] || options[:count]
       args[:with_scores] = options[:with_scores] == true
 
-      send_reversable(:zrangebyscore, options[:reverse], key, min, max, args).map {|v| args[:with_scores] ? [unmarshal(v[0]), v[1]] : unmarshal(v)}
+      send_reversable(:zrangebyscore, options[:reverse], key, min, max, **args).map {|v| args[:with_scores] ? [unmarshal(v[0]), v[1]] : unmarshal(v)}
     end
 
-    def rev_range_by_score(min, max, options={})
-      range_by_score(min, mix, options.merge(reverse: true))
+    def rev_range_by_score(min, max, **options)
+      range_by_score(min, max, **options.merge(reverse: true))
     end
 
     def rem_range_by_rank(min, max)
@@ -133,7 +133,7 @@ class Redis
     end
 
     def ==(other)
-      members == x
+      members == other
     end
 
     def to_s
@@ -169,8 +169,8 @@ class Redis
 
     alias_method :include?, :member?
 
-    def members(options={})
-      range(0, -1, options) || []
+    def members(**options)
+      range(0, -1, **options) || []
     end
 
     alias_method :to_a, :members
