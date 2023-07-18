@@ -14,8 +14,13 @@ class Redis
 
     def set_expiration
       return unless redis.ttl(key) < 0
-      redis.expire(key, options[:expiration]) if options[:expiration]
-      redis.expireat(key, options[:expire_at].to_i) if options[:expire_at]
+
+      if (expiration = options[:expiration])
+        redis.expire(key, expiration)
+      elsif (expire_at = options[:expire_at])
+        at = expire_at.respond_to?(:call) ? expire_at.call : expire_at
+        redis.expireat(key, at.to_i) if at
+      end
     end
 
     def self.expiration_filter(*names)

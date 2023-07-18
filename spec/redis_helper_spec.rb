@@ -23,6 +23,7 @@ describe Redis::RedisHelper do
       value :updated_at, :marshal => true
       value :key_location, :expiration => 10
       value :milk, :expire_at => Time.now + 100
+      value :proc_expiration, expire_at: -> { Time.now + 100 }
       value :current_galaxy, :global => true
       counter :num_grapes
       list :shopping_list, :marshal => true
@@ -81,6 +82,14 @@ describe Redis::RedisHelper do
         expect(@obj.key_location).to eq 'On my desk'
         expect(@obj.key_location.ttl).to be > 0
         expect(@obj.key_location.ttl).to be <= 10
+      end
+
+      it 'should respect value of expiration (dynamic)' do
+        @obj.proc_expiration = '1'
+
+        expect(@obj.proc_expiration).to eq('1')
+        expect(@obj.proc_expiration.ttl).to be > 0
+        expect(@obj.proc_expiration.ttl).to be <= 100
       end
 
       it 'should support counters' do
