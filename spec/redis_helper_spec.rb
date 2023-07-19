@@ -100,6 +100,21 @@ describe Redis::RedisHelper do
         expect(@obj.num_grapes.decrement).to eq 0
         expect(@obj.num_grapes).to eq 0
       end
+
+      it 'should support rewindable blocks for counters' do
+        @obj.num_grapes.reset
+        @obj.num_grapes.increment { |count| 'nice!' }
+
+        expect(@obj.num_grapes).to eq(1)
+
+        @obj.num_grapes.increment { |count| nil }
+
+        expect(@obj.num_grapes).to eq(1)
+
+        @obj.num_grapes.increment(5) { |count| 'super nice!' }
+
+        expect(@obj.num_grapes).to eq(6)
+      end
     end
 
     describe 'A list property' do
