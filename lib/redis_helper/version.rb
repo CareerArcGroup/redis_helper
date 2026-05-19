@@ -1,5 +1,5 @@
 class Redis
   module RedisHelper
-    VERSION = "3.0.3"
+    VERSION = "4.0.2"
   end
 end
