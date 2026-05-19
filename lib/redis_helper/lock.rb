@@ -52,7 +52,7 @@ class Redis
         # if we're here, the lock has been acquired by someone
         # else, and we haven't elected to fail fast...
         if has_expiration? && redis.get(key).to_f < Time.now.to_f
-          if redis.getset(key, generate_expiration).to_f < Time.now.to_f
+          if redis.set(key, generate_expiration, get: true).to_f < Time.now.to_f
             acquired = true; break
           end
         end
