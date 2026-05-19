@@ -79,7 +79,7 @@ class Redis
     end
 
     def bulk_set(**pairs)
-      redis.hmset(key, *pairs.inject([]) do |memo,kv|
+      redis.hset(key, *pairs.inject([]) do |memo,kv|
         memo + [kv[0], marshal(kv[1], options[:marshal_keys][kv[0]])]
       end)
     end

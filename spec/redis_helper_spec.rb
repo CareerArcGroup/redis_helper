@@ -27,8 +27,11 @@ describe Redis::RedisHelper do
       value :current_galaxy, :global => true
       counter :num_grapes
       list :shopping_list, :marshal => true
+      list :purchased_items, :marshal => true
       set :numbers, :marshal => true
       sorted_set :high_scores
+      hash_set :user_info, :marshal => true
+      lock :shared_state, :timeout => 1, :poll_interval => 1
     end
 
     @obj = Redis::RedisBackedObject.new
@@ -99,6 +102,8 @@ describe Redis::RedisHelper do
         expect(@obj.num_grapes).to eq 1
         expect(@obj.num_grapes.decrement).to eq 0
         expect(@obj.num_grapes).to eq 0
+        expect(@obj.num_grapes.get_set(10)).to eq 0
+        expect(@obj.num_grapes).to eq 10
       end
 
       it 'should support rewindable blocks for counters' do
@@ -199,6 +204,12 @@ describe Redis::RedisHelper do
         @obj.shopping_list << 'apples'
         coll = @obj.shopping_list.select {|item| item == 'apples'}
         expect(coll).to eq %w(apples apples)
+
+        @obj.purchased_items.clear!
+        @obj.shopping_list.pop_push(@obj.purchased_items)
+
+        expect(@obj.purchased_items).to eq %w(apples)
+        expect(@obj.shopping_list).to eq %w(apples cucumbers figs grapes habaneros illy)
       end
     end
 
@@ -215,6 +226,15 @@ describe Redis::RedisHelper do
 
         expect(numbers).to include(@obj.numbers.random_member)
         expect(@obj.numbers.random_member(3).size).to eq(3)
+
+        @obj.numbers.add(42)
+        expect(@obj.numbers.member?(42)).to be true
+
+        @obj.numbers.delete(42)
+        expect(@obj.numbers.member?(42)).to be false
+
+        @obj.numbers.delete_if(&:odd?)
+        expect(@obj.numbers).to eq [2, 4]
       end
     end
 
@@ -245,6 +265,52 @@ describe Redis::RedisHelper do
         expect(@obj.high_scores.range_by_score(0, 600).size).to eq 3
         expect(@obj.high_scores.range_by_score(-200, 100).size).to eq 2
         expect(@obj.high_scores.range_by_score('-inf', 0).size).to eq 3
+      end
+    end
+
+    describe 'A hash set property' do
+      it 'should handle hash sets' do
+        @obj.user_info.clear!
+
+        expect(@obj.user_info).to be_empty
+
+        @obj.user_info['name'] = 'Alice'
+        @obj.user_info['age'] = 30
+
+        expect(@obj.user_info['name']).to eq 'Alice'
+        expect(@obj.user_info['age']).to eq 30
+        expect(@obj.user_info.size).to eq 2
+
+        @obj.user_info['age'] = 31
+
+        expect(@obj.user_info['age']).to eq 31
+
+        @obj.user_info.delete!('name')
+
+        expect(@obj.user_info).to_not include('name')
+        expect(@obj.user_info).to include('age')
+
+        @obj.user_info.bulk_set('city' => 'New York', 'occupation' => 'Developer')
+
+        expect(@obj.user_info['city']).to eq 'New York'
+        expect(@obj.user_info['occupation']).to eq 'Developer'
+      end
+    end
+
+    describe 'A lock property' do
+      it 'provides a mutex lock' do
+        @obj.shared_state_lock.clear
+
+        expect(@obj.shared_state_lock.lock { "Locked!" }).to eq "Locked!"
+
+        @obj.redis.set(@obj.shared_state_lock.key, Time.now.to_f + 10)
+
+        expect(@obj.shared_state_lock.locked?).to be true
+        expect(@obj.shared_state_lock.lock(timeout: 0) { "Locked!" }).to be_nil
+
+        expect {
+          @obj.shared_state_lock.lock(timeout: 1) { "Locked!" }
+        }.to raise_error(Redis::Lock::LockTimeout)
       end
     end
   end

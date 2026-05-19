@@ -47,7 +47,7 @@ class Redis
     end
 
     def pop_push(destination)
-      unmarshal redis.rpoplpush(key, destination.is_a?(Redis::List) ? destination.key : destination.to_s)
+      unmarshal redis.lmove(key, destination.is_a?(Redis::List) ? destination.key : destination.to_s, "RIGHT", "LEFT")
     end
 
     # add a member to the head of the list

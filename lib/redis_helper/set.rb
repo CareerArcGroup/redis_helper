@@ -11,7 +11,7 @@ class Redis
     end
 
     def add(value)
-      redis.sadd(key, marshal(value)) if value.nil? || !Array(value).empty?
+      redis.sadd?(key, marshal(value)) if value.nil? || !Array(value).empty?
     end
 
     def pop
@@ -40,14 +40,14 @@ class Redis
     alias_method :include?, :member?
 
     def delete(value)
-      redis.srem(key, marshal(value))
+      redis.srem?(key, marshal(value))
     end
 
     def delete_if(&block)
       res = false
       redis.smembers(key).each do |m|
         if block.call(unmarshal(m))
-          res = redis.srem(key, m)
+          res = redis.srem?(key, m)
         end
       end
       res
