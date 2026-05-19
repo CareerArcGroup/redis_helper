@@ -19,7 +19,7 @@ class Redis
     end
 
     def get_set(to=options[:start])
-      redis.getset(key, to.to_i).to_i
+      redis.set(key, to.to_i, get: true).to_i
     end
 
     def value
