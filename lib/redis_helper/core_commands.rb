@@ -29,7 +29,7 @@ class Redis
         redis.expireat key, unix_time
       end
 
-      def perist
+      def persist
         redis.persist key
       end
 
